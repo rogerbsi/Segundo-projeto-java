@@ -1,0 +1,124 @@
+spring:
+  profiles:
+    default: homol
+  application:
+    name: API Defensoria - Teste
+  servlet:
+    multipart:
+      max-file-size: 5MB
+  #configuração do jackson
+  jackson:
+    default-property-inclusion: NON_NULL
+
+# Email configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+      oauth2:
+        client:
+          registration:
+            google:
+              clientId: ${GOOGLE_CLIENT_ID}
+              clientSecret: ${GOOGLE_SECRET}
+              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+              scope:
+                - email
+                - profile
+            facebook:
+              clientId: ${FACEBOOK_CLIENT_ID}
+              clientSecret: ${FACEBOOK_SECRET}
+              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+              scope:
+                - email
+                - public_profile
+            github:
+              clientId: ${GITHUB_CLIENT_ID}
+              clientSecret: ${GITHUB_SECRET}
+              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+              scope:
+                - email
+                - public_profile
+            keycloak:
+              clientId: ${KEYCLOACK_CLIENT_ID}
+              clientSecret: ${KEYCLOACK_SECRET}
+              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+              scope: openid,profile,email,roles
+              authorization-grant-type: authorization_code
+          provider:
+            keycloak:
+              issuer-uri: ${KEYCLOACK_URL}
+              user-name-attribute: preferred_username
+            facebook:
+              authorizationUri: https://www.facebook.com/v3.0/dialog/oauth
+              tokenUri: https://graph.facebook.com/v3.0/oauth/access_token
+              userInfoUri: https://graph.facebook.com/v3.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
+
+# Swagger
+springdoc:
+  swagger-ui:
+    use-root-path: true
+  show-login-endpoint: true
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  file:
+      name: /var/log/apiRelatorios.log
+      path: /var/log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+  level:
+    web: debug
+    sql: info
+    root: error
+
+# keys
+rsa:
+  private-key:
+    classpath:certs/private.pem
+  public-key:
+    classpath:certs/public.pem
+
+# Server configuration
+server:
+  port: ${APP_PORT}
+  forward-headers-strategy: framework
+  compression:
+    enabled: true
+    min-response-size: 2048
+    mime-types:
+    - application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+
+token:
+  domain: ${DOMAIN_COOKIE}
+  expiresHours: ${TOKEN_EXPIRES_HOURS}
+
+cors:
+  allowedOrigins: ${ALLOWED_ORIGINS}
+
+env:
+  comprovanteEscolaridade: ${PATH_COMPROVANTE_ESCOLARIDADE}
+  comprovanteCurso: ${PATH_COMPROVANTE_CURSO}
+  comprovanteExperienciaTrabalho: ${PATH_COMPROVANTE_EXPERIENCIA_TRABALHO}
+  arquivosProcessoSeletivo: ${PATH_ARQUIVOS_EDITAL}
+
+jasper:
+  report:
+    inscritos: /jasper/CandidatosInscritos.jrxml
+
+oauth:
+  # After successfully authenticating with the OAuth2 Provider,
+  # we'll be generating an auth token for the user and sending the token to the
+  # redirectUri mentioned by the client in the /oauth2/authorize request.
+  # We're not using cookies because they won't work well in mobile clients.
+  authorizedRedirectUris: ${REDIRECT_URIS}
